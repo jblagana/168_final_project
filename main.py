@@ -37,7 +37,7 @@ def on_generation(ga_instance):
     filled_len = int(progress_bar_len * progress)
     bar = '=' * filled_len + '-' * (progress_bar_len - filled_len)
     sys.stdout.write(f'\rGeneration progress: [{bar}] {progress * 100:.1f}% [{label}]')
-    sys.stdout.flush()  # Ensure the output is displayed immediately
+    sys.stdout.flush()
 
 # Define the GA parameters
 str_gene_space = dss.Circuit.AllNodeNames()
@@ -54,18 +54,20 @@ ga_instance = pygad.GA(
     mutation_num_genes=1
 )
 
-print('\n')
-ga_instance.run()
-solution, solution_fitness, solution_idx = ga_instance.best_solution()
-str_solution = [str_gene_space[int(gene)] for gene in solution]
 
-cap_names = dss.Capacitors.AllNames()
-cap_locations = str_solution
-data = list(zip(cap_names, cap_locations))
-print('\n')
+if __name__ == "__main__":
+    print('\n')
+    ga_instance.run()
+    solution, solution_fitness, solution_idx = ga_instance.best_solution()
+    str_solution = [str_gene_space[int(gene)] for gene in solution]
 
-table = tabulate(data, headers=['Capacitor', 'Optimal Location'], tablefmt='fancy_grid')
-print(table)
+    cap_names = dss.Capacitors.AllNames()
+    cap_locations = str_solution
+    data = list(zip(cap_names, cap_locations))
+    print('\n')
+
+    table = tabulate(data, headers=['Capacitor', 'Optimal Location'], tablefmt='fancy_grid')
+    print(table)
 
 
 
