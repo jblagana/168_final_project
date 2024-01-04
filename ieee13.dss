@@ -1,0 +1,105 @@
+clear
+new circuit.IEEE13
+~ basekV=4.16 phases=3
+~ MVAsc3=250000 250000
+
+
+!WIRE DATA
+!wires are ACSR
+new wiredata.556500   Runits=mi   Rac=0.1859   GMRunits=ft   GMRac=0.0313     Radunits=in   Diam=0.927
+new wiredata.4/0          Runits=mi   Rac=0.592     GMRunits=ft   GMRac=0.00814   Radunits=in   Diam=0.563
+new wiredata.1/0          Runits=mi   Rac=1.12       GMRunits=ft   GMRac=0.00446   Radunits=in   Diam=0.398
+
+
+!LINE GEOMETRIES
+new linegeometry.config601 nconds=4 nphases=3 reduce=yes
+~ cond=1 wire=556500 units=ft x=-1 h=28     
+~ cond=2 wire=556500 units=ft x=-3.5 h=28
+~ cond=3 wire=556500 units=ft x=3.5 h=28
+~ cond=4 wire=4/0        units=ft x=0.5 h=24
+
+new linegeometry.config602 nconds=4 nphases=3 reduce=yes
+~ cond=1 wire=4/0 units=ft x=-1 h=28
+~ cond=2 wire=4/0 units=ft x=3.5 h=28
+~ cond=3 wire=4/0 units=ft x=-3.5 h=28
+~ cond=4 wire=4/0 units=ft x=0.5 h=24
+
+new linegeometry.config603 nconds=3 nphases=2 reduce=yes
+~ cond=1 wire=1/0 units=ft x=3.5 h=28
+~ cond=2 wire=1/0 units=ft x=-3.5 h=28
+~ cond=3 wire=1/0 units=ft x=0.5 h=24
+
+new linegeometry.config604 nconds=3 nphases=2 reduce=yes
+~ cond=1 wire=1/0 units=ft x=-3.5 h=28
+~ cond=2 wire=1/0 units=ft x=3.5 h=28
+~ cond=3 wire=1/0 units=ft x=0.5 h=24
+
+new linegeometry.config605 nconds=2 nphases=1 reduce=yes
+~ cond=1 wire=1/0 units=ft x=0 h=29
+~ cond=2 wire=1/0 units=ft x=0.5 h=24
+
+
+!LINE CODES FOR UNDERGROUND LINES
+new linecode.mtx606 nphases=3  units=mi
+~ Rmatrix = [0.7982     | 0.3192    0.7891| 0.2849  0.3192  0.7982]
+~ Xmatrix = [0.4463     | 0.0328    0.4041| -0.0143 0.0328  0.4463]
+~ Cmatrix = [96.8897   | 0           96.8897| 0           0         96.8897]
+
+new linecode.mtx607 nphases=1 units=mi
+~ Rmatrix = [1.3425]
+~ Xmatrix = [0.5124]
+~ Cmatrix = [88.9912]
+
+
+!LINES (1A, 2B, 3C)
+!Let Bus 670 be the point of the distributed load on the line between 632 and 671 located in the middle of the line
+new line.650632    Phases=3   bus1=SourceBus.2.1.3    Bus2=632.2.1.3   geometry=config601 Length=2000  units=ft 
+new line.632670    Phases=3   bus1=632.2.1.3    Bus2=670.2.1.3   geometry=config601 Length=1000  units=ft    
+new line.670671    Phases=3   bus1=670.2.1.3    Bus2=671.2.1.3   geometry=config601 Length=1000  units=ft 
+new line.671680    Phases=3   bus1=671.2.1.3    Bus2=680.2.1.3   geometry=config601 Length=1000  units=ft 
+new line.632633    Phases=3   bus1=632.3.1.2    Bus2=633.3.1.2   geometry=config602 Length=500    units=ft 
+new line.632645    Phases=2   bus1=632.3.2       Bus2=645.3.2      geometry=config603 Length=500    units=ft 
+new line.645646    Phases=2   bus1=645.3.2       Bus2=646.3.2      geometry=config603 Length=300    units=ft 
+new line.671684    Phases=2   bus1=671.1.3       Bus2=684.1.3      geometry=config604 Length=300    units=ft 
+new line.684611    Phases=1   bus1=684.3          Bus2=611.3         geometry=config605 Length=300    units=ft 
+new line.692675    Phases=3   bus1=692.1.2.3    Bus2=675.1.2.3   LineCode=mtx606 Length=500        units=ft 
+new line.684652    Phases=1   bus1=684.1          Bus2=652.1         LineCode=mtx607 Length=800        units=ft
+
+
+!TRANSFORMER
+new transformer.xfm1 xhl=2
+~ wdg=1 bus=633 conn=wye kV=4.16 kVA=500 %r=0.55
+~ wdg=2 bus=634 conn=wye kV=0.48 kVA=500 %r=0.55
+
+
+!LOAD 
+new load.611      bus1=611.3        Phases=1 Conn=Wye   Model=5 kV=2.4      kW=170   kvar=80 
+new load.634a    bus1=634.1        Phases=1 Conn=Wye   Model=1 kV=0.277  kW=160   kvar=110 
+new load.634b    bus1=634.2        Phases=1 Conn=Wye   Model=1 kV=0.277  kW=120   kvar=90 
+new load.634c    bus1=634.3        Phases=1 Conn=Wye   Model=1 kV=0.277  kW=120   kvar=90
+new load.645      bus1=645.2        Phases=1 Conn=Wye   Model=1 kV=2.4      kW=170   kvar=125
+new load.646      bus1=646.2        Phases=1 Conn=Delta Model=2 kV=4.16    kW=230   kvar=132
+new load.652      bus1=652.1        Phases=1 Conn=Wye   Model=2 kV=2.4      kW=128   kvar=86 
+new load.670a    bus1=670.1        Phases=1 Conn=Wye   Model=1 kV=2.4      kW=17     kvar=10 
+new load.670b    bus1=670.2        Phases=1 Conn=Wye   Model=1 kV=2.4      kW=66     kvar=38 
+new load.670c    bus1=670.3        Phases=1 Conn=Wye   Model=1 kV=2.4      kW=117   kvar=68
+new load.671      bus1=671.1.2.3  Phases=3 Conn=Delta Model=1 kV=4.16    kW=1155 kvar=660
+new load.675a    bus1=675.1        Phases=1 Conn=Wye   Model=1 kV=2.4      kW=485   kvar=190 
+new load.675b    bus1=675.2        Phases=1 Conn=Wye   Model=1 kV=2.4      kW=68     kvar=60 
+new load.675c    bus1=675.3        Phases=1 Conn=Wye   Model=1 kV=2.4      kW=290   kvar=212 
+new load.692      bus1=692.3        Phases=1 Conn=Delta Model=5 kV=4.16    kW=170   kvar=151
+
+
+!CAPACITOR
+new capacitor.C1 bus1=675    phases=3 kvar=600 kV=4.16 
+new capacitor.C2 bus1=611.3 phases=1 kvar=100 kV=4.16
+
+
+!SWITCH
+new line.671692    Phases=3 Bus1=671   Bus2=692  Switch=y
+
+set voltagebases=[4.16, 0.48]
+calcvoltagebases
+solve
+
+// show voltage LN nodes
