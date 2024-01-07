@@ -25,9 +25,10 @@ def fitness_func(ga_instance, solution, solution_idx):
     str_solution = [str_gene_space[int(gene)] for gene in solution]
     nominal_voltage = 1
     node_voltages = simulate(str_solution)
+    
     # Calculate the mean squared error
     mse = sum((v - nominal_voltage) ** 2 for v in node_voltages) / len(node_voltages)
-    return mse
+    return 1/mse
 
 
 def on_generation(ga_instance):
