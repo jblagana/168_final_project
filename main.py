@@ -45,7 +45,7 @@ str_gene_space = dss.Circuit.AllNodeNames()
 gene_space = [list(range(len(str_gene_space)))]*2   # Map the strings to integers
 
 ga_instance = pygad.GA(
-    num_generations=500,
+    num_generations=100,
     num_parents_mating=25,
     fitness_func=fitness_func,
     sol_per_pop=50,
@@ -69,6 +69,9 @@ if __name__ == "__main__":
 
     table = tabulate(data, headers=['Capacitor', 'Optimal Location'], tablefmt='fancy_grid')
     print(table)
+    print("Fitness: ", solution_fitness)
+    # ga_instance.plot_fitness()
+    
 
 
 
