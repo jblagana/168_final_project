@@ -15,18 +15,34 @@ def simulate(new_buses, new_kvars):
     node_voltages = dss.Circuit.AllBusMagPu()
     return node_voltages
 
-
 def edit_cap(new_buses, new_kvars):
-    cap_names = dss.Capacitors.AllNames()
+    for i in range(len(new_buses)):
+        dss.Text.Command(f'Edit Capacitor.cap{i+1} bus1={new_buses[i]} kvar={new_kvars[i]}')
 
-    for i, cap in enumerate(cap_names):
-        dss.Text.Command(f'Edit Capacitor.{cap} bus1={new_buses[i]} kvar={new_kvars[i]}')
+
+def display_voltages(solution):
+    new_buses, new_kvars = split_solution(solution)
+
+    dss.Text.Command('Redirect ieee13.dss')
+    simulate(new_buses, new_kvars)
+    node_names = dss.Circuit.AllNodeNames()
+    node_voltages = [round(v, 6) for v in dss.Circuit.AllBusMagPu()]  # round to 6 decimal places
+
+    min_voltage = min(node_voltages)
+    max_voltage = max(node_voltages)
+
+    node_voltages[node_voltages.index(min_voltage)] = f"**{min_voltage}**"
+    node_voltages[node_voltages.index(max_voltage)] = f"**{max_voltage}**"
+
+    data = list(zip(node_names, node_voltages))
+
+    table = tabulate(data, headers=['Node', 'Voltage (p.u.)'], tablefmt='fancy_grid')
+    print(table)
 
 
 def split_solution(solution):
     new_buses = [bus for i,bus in enumerate(solution) if i%2 == 0]
     new_kvars = [kvar for i,kvar in enumerate(solution) if i%2 != 0]
-
     return new_buses, new_kvars
 
 
@@ -37,12 +53,10 @@ def fitness_func(ga_instance, solution, solution_idx):
     
     # Calculate the mean squared error
     mse = sum((v - nominal_voltage) ** 2 for v in node_voltages) / len(node_voltages)
-
-    # Calculate the total cost of kvar
-    total_cost = sum(kvar for kvar in new_kvars)  # Assuming a simple linear cost model
     
+    total_kvar = sum(kvar for kvar in new_kvars)
     
-    return [1/mse, 1/total_cost]
+    return [1/mse, 1/total_kvar] #minimize the mse and total kvar
     # return 1/mse
 
 
@@ -57,7 +71,7 @@ def on_generation(ga_instance):
 
 
 def gene_space():
-    cap_num = len(dss.Capacitors.AllNames()) #number of caps in the circuit
+    cap_num = len(dss.Capacitors.AllNames())
 
     # Get bus space
     bus_space = []
@@ -68,12 +82,13 @@ def gene_space():
         except ValueError:
             continue
 
-    kvar_space = {"low": 0, "high": 10000} #assuming max of 1000 kvar per capacitor
+    kvar_space = [25, 50, 75, 100, 150, 200, 300, 400, 500, 600]
+    # kvar_space = {"low": 0, "high":1800}
 
     gene_space = []
     for _ in range(cap_num):
-        gene_space.append(bus_space)  # bus
-        gene_space.append(kvar_space)  # kvar
+        gene_space.append(bus_space)
+        gene_space.append(kvar_space)
 
     return gene_space
 
@@ -81,15 +96,16 @@ def gene_space():
 
 
 
+
 ga_instance = pygad.GA(
-    num_generations=500,
+    num_generations=1000,
     num_parents_mating=25,
     fitness_func=fitness_func,
     sol_per_pop=50,
     num_genes=len(gene_space()),
     gene_space=gene_space(),
     on_generation=on_generation,
-    # mutation_num_genes=1
+    mutation_num_genes=1
 )
 
 
@@ -108,10 +124,9 @@ if __name__ == "__main__":
     print("Fitness: ", solution_fitness)
     # ga_instance.plot_fitness()
 
+    display_voltages(solution)
+    print("Total kvar: ", sum(cap_kvars))
 
-
-    # dss.utils.class_to_dataframe('Capacitors').transpose()                  
-    # print('Min Voltage: ', min(dss.Circuit.AllBusMagPu()), 'Max Voltage: ', max(dss.Circuit.AllBusMagPu()))
     
     
 
