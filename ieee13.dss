@@ -91,8 +91,13 @@ new load.692      bus1=692.3        Phases=1 Conn=Delta Model=5 kV=4.16    kW=17
 
 
 !CAPACITOR
-new capacitor.C1 bus1=680.3    phases=3 kvar=600 kV=4.16 
-new capacitor.C2 bus1=680.1 phases=1 kvar=100 kV=4.16
+new capacitor.C1 bus1=675.1    phases=3 kvar=600     kV=4.16 
+new capacitor.C2 bus1=680.1    phases=1 kvar=600     kV=4.16
+!new capacitor.C3 bus1=680.1    phases=3 kvar=600     kV=4.16 
+!new capacitor.C4 bus1=684.1    phases=1 kvar=600     kV=4.16
+!new capacitor.C5 bus1=680.3    phases=3 kvar=600     kV=4.16 
+!new capacitor.C6 bus1=680.3    phases=1 kvar=600     kV=4.16
+
 
 
 !SWITCH
