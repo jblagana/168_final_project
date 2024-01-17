@@ -54,10 +54,18 @@ def fitness_func(ga_instance, solution, solution_idx):
     # Calculate the mean squared error
     mse = sum((v - nominal_voltage) ** 2 for v in node_voltages) / len(node_voltages)
     
-    total_kvar = sum(kvar for kvar in new_kvars)
+    total_cost = cap_cost(new_kvars)
     
-    return [1/mse, 1/total_kvar] #minimize the mse and total kvar
+    return [1/mse, 1/total_cost] #minimize the mse and total cost
     # return 1/mse
+
+
+def cap_cost(new_kvars):
+    cost =  {25:20000.00, 50:35000.00, 75:30000.00, 100:35000.00, 150:38000.00, 200:45000.00}
+    total_cost = 0
+    for kvar in new_kvars:
+        total_cost += cost[kvar]
+    return total_cost
 
 
 def on_generation(ga_instance):
@@ -82,7 +90,7 @@ def gene_space():
         except ValueError:
             continue
 
-    kvar_space = [25, 50, 75, 100, 150, 200, 300, 400, 500, 600]
+    kvar_space = [25, 50, 75, 100, 150, 200]
     # kvar_space = {"low": 0, "high":1800}
 
     gene_space = []
@@ -125,7 +133,7 @@ if __name__ == "__main__":
     # ga_instance.plot_fitness()
 
     display_voltages(solution)
-    print("Total kvar: ", sum(cap_kvars))
+    print("Total cost in PHP: ", cap_cost(cap_kvars))
 
     
     
