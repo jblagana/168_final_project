@@ -91,26 +91,41 @@ new load.692      bus1=692.3        Phases=1 Conn=Delta Model=5 kV=4.16    kW=17
 
 
 !CAPACITOR
-new capacitor.cap1 bus1=675.1    phases=3 kvar=600     kV=4.16 
+new capacitor.cap1 bus1=675.1    phases=1 kvar=600     kV=4.16 
 new capacitor.cap2 bus1=680.1    phases=1 kvar=600     kV=4.16
-new capacitor.cap3 bus1=675.1    phases=3 kvar=600     kV=4.16 
+new capacitor.cap3 bus1=675.1    phases=1 kvar=600     kV=4.16 
 new capacitor.cap4 bus1=680.1    phases=1 kvar=600     kV=4.16
-new capacitor.cap5 bus1=675.1    phases=3 kvar=600     kV=4.16 
-// new capacitor.cap6 bus1=680.1    phases=1 kvar=600     kV=4.16
-// new capacitor.cap7 bus1=675.1    phases=3 kvar=600     kV=4.16 
+new capacitor.cap5 bus1=675.1    phases=1 kvar=600     kV=4.16 
+new capacitor.cap6 bus1=680.1    phases=1 kvar=600     kV=4.16
+new capacitor.cap7 bus1=675.1    phases=1 kvar=600     kV=4.16 
 // new capacitor.cap8 bus1=680.1    phases=1 kvar=600     kV=4.16
-// new capacitor.cap9 bus1=675.1    phases=3 kvar=600     kV=4.16 
+// new capacitor.cap9 bus1=675.1    phases=1 kvar=600     kV=4.16 
 // new capacitor.cap10 bus1=680.1    phases=1 kvar=600     kV=4.16
-// new capacitor.cap11 bus1=675.1    phases=3 kvar=600     kV=4.16 
+// new capacitor.cap11 bus1=675.1    phases=1 kvar=600     kV=4.16 
 // new capacitor.cap12 bus1=680.1    phases=1 kvar=600     kV=4.16
-// new capacitor.cap13 bus1=675.1    phases=3 kvar=600     kV=4.16 
+// new capacitor.cap13 bus1=675.1    phases=1 kvar=600     kV=4.16 
 // new capacitor.cap14 bus1=680.1    phases=1 kvar=600     kV=4.16
-// new capacitor.cap15 bus1=675.1    phases=3 kvar=600     kV=4.16 
+// new capacitor.cap15 bus1=675.1    phases=1 kvar=600     kV=4.16 
 // new capacitor.cap16 bus1=680.1    phases=1 kvar=600     kV=4.16
-// new capacitor.cap17 bus1=675.1    phases=3 kvar=600     kV=4.16 
+// new capacitor.cap17 bus1=675.1    phases=1 kvar=600     kV=4.16 
 // new capacitor.cap18 bus1=680.1    phases=1 kvar=600     kV=4.16
-// new capacitor.cap19 bus1=675.1    phases=3 kvar=600     kV=4.16 
+// new capacitor.cap19 bus1=675.1    phases=1 kvar=600     kV=4.16 
 // new capacitor.cap20 bus1=680.1    phases=1 kvar=600     kV=4.16
+// new capacitor.cap21 bus1=680.1    phases=1 kvar=600     kV=4.16
+// new capacitor.cap22 bus1=675.1    phases=1 kvar=600     kV=4.16 
+// new capacitor.cap23 bus1=680.1    phases=1 kvar=600     kV=4.16
+// new capacitor.cap24 bus1=675.1    phases=1 kvar=600     kV=4.16 
+// new capacitor.cap25 bus1=680.1    phases=1 kvar=600     kV=4.16
+// new capacitor.cap26 bus1=680.1    phases=1 kvar=600     kV=4.16
+// new capacitor.cap27 bus1=675.1    phases=1 kvar=600     kV=4.16 
+// new capacitor.cap28 bus1=680.1    phases=1 kvar=600     kV=4.16
+// new capacitor.cap29 bus1=675.1    phases=1 kvar=600     kV=4.16 
+// new capacitor.cap30 bus1=680.1    phases=1 kvar=600     kV=4.16
+// new capacitor.cap31 bus1=680.1    phases=1 kvar=600     kV=4.16
+// new capacitor.cap32 bus1=675.1    phases=1 kvar=600     kV=4.16 
+// new capacitor.cap33 bus1=680.1    phases=1 kvar=600     kV=4.16
+// new capacitor.cap34 bus1=675.1    phases=1 kvar=600     kV=4.16 
+// new capacitor.cap35 bus1=680.1    phases=1 kvar=600     kV=4.16
 
 
 

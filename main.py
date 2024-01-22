@@ -3,6 +3,7 @@ import pygad
 from tabulate import tabulate
 import sys
 import logging
+import numpy as np
 logging.basicConfig(level=logging.WARNING)
 
 
@@ -16,8 +17,9 @@ def simulate(new_buses, new_kvars):
     return node_voltages
 
 def edit_cap(new_buses, new_kvars):
-    for i in range(len(new_buses)):
-        dss.Text.Command(f'Edit Capacitor.cap{i+1} bus1={new_buses[i]} kvar={new_kvars[i]}')
+    all_caps = dss.Capacitors.AllNames()
+    for i, cap in enumerate(all_caps):
+        dss.Text.Command(f'Edit Capacitor.{cap} bus1={new_buses[i]} kvar={new_kvars[i]}')
 
 
 def display_voltages(solution):
@@ -40,6 +42,16 @@ def display_voltages(solution):
     print(table)
 
 
+def display_loss(solution):
+    new_buses, new_kvars = split_solution(solution)
+
+    dss.Text.Command('Redirect ieee13.dss')
+    simulate(new_buses, new_kvars)
+    loss = dss.Circuit.Losses()
+    print("Total Losses: ", loss)
+    
+
+
 def split_solution(solution):
     new_buses = [bus for i,bus in enumerate(solution) if i%2 == 0]
     new_kvars = [kvar for i,kvar in enumerate(solution) if i%2 != 0]
@@ -47,25 +59,47 @@ def split_solution(solution):
 
 
 def fitness_func(ga_instance, solution, solution_idx):
+    V_thresh = 0.95
     new_buses, new_kvars = split_solution(solution)
     nominal_voltage = 1
     node_voltages = simulate(new_buses, new_kvars)
+    cost_list = cap_costs(new_kvars)
     
+    # mse_list = [(v - nominal_voltage) ** 2 for v in node_voltages]
+    # min_mse = min(mse_list)
+    # max_mse = max(mse_list)
+    # nmse = sum((mse - min_mse)/(max_mse - min_mse) for mse in mse_list) / len(node_voltages)
+
+    # cost_mse_list = [(1 - (cost/45000 - 1) ** 2) for cost in cost_list]
+    # min_cost_mse = min(cost_mse_list)
+    # max_cost_mse = max(cost_mse_list)
+    # cost_nmse = sum((cost_mse - min_cost_mse)/(max_cost_mse+0.00000001 - min_cost_mse) for cost_mse in cost_mse_list) / len(node_voltages)
+
+
     # Calculate the mean squared error
-    mse = sum((v - nominal_voltage) ** 2 for v in node_voltages) / len(node_voltages)
+    mse_voltage = sum((v - nominal_voltage) ** 2 for v in node_voltages) / len(node_voltages)
+    mse_cost = 1 - sum((c/45000 - 1) ** 2 for c in cost_list) / len(cost_list)
     
-    total_cost = cap_cost(new_kvars)
     
-    return [1/mse, 1/total_cost] #minimize the mse and total cost
-    # return 1/mse
+    # if min(node_voltages) >= V_thresh:
+    #     fitness = (1/mse_voltage)+(1/(1-mse_cost))+2000
+    # else:
+    #     fitness = (1/mse_voltage)+(1/(1-mse_cost))
+    # return fitness
+    # nmse_v = mse_voltage/0.1
+    # nmse_c = (mse_cost-0.7)/0.3
+    # minimize the mse and total cost
+    # return 1/mse_voltage
+    # print("mse: ", 1/mse_voltage, "cost: ", 1/mse_cost)
+    return 1/mse_voltage + 1/mse_cost
 
 
-def cap_cost(new_kvars):
+def cap_costs(new_kvars):
     cost =  {25:20000.00, 50:35000.00, 75:30000.00, 100:35000.00, 150:38000.00, 200:45000.00}
-    total_cost = 0
+    cap_costs = []
     for kvar in new_kvars:
-        total_cost += cost[kvar]
-    return total_cost
+        cap_costs.append(cost[kvar])
+    return cap_costs
 
 
 def on_generation(ga_instance):
@@ -101,10 +135,6 @@ def gene_space():
     return gene_space
 
 
-
-
-
-
 ga_instance = pygad.GA(
     num_generations=1000,
     num_parents_mating=25,
@@ -113,7 +143,6 @@ ga_instance = pygad.GA(
     num_genes=len(gene_space()),
     gene_space=gene_space(),
     on_generation=on_generation,
-    mutation_num_genes=1
 )
 
 
@@ -129,11 +158,12 @@ if __name__ == "__main__":
 
     table = tabulate(data, headers=['Capacitor', 'Optimal Location', 'kvar'], tablefmt='fancy_grid')
     print(table)
-    print("Fitness: ", solution_fitness)
     # ga_instance.plot_fitness()
 
     display_voltages(solution)
-    print("Total cost in PHP: ", cap_cost(cap_kvars))
+    print("Total cost in PHP: ", sum(cap_costs(cap_kvars)))
+    display_loss(solution)
+    print("Fitness: ", solution_fitness)
 
     
     
